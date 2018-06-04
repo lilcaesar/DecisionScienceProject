@@ -1,3 +1,2 @@
 #include "clarkwrightfunctions.h"
 
-

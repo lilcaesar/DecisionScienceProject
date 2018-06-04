@@ -5,7 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         main.cpp \
-    clarkwrightfunctions.cpp
+    clarkwrightfunctions.cpp \
+    semaphore.cpp
 
 HEADERS += \
-    clarkwrightfunctions.h
+    clarkwrightfunctions.h \
+    semaphore.h
