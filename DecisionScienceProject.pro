@@ -11,8 +11,10 @@ LIBS += -lstdc++fs
 SOURCES += \
         main.cpp \
     clarkwrightfunctions.cpp \
-    semaphore.cpp
+    semaphore.cpp \
+    genericfunctions.cpp
 
 HEADERS += \
     clarkwrightfunctions.h \
-    semaphore.h
+    semaphore.h \
+    genericfunctions.h
