@@ -3,15 +3,28 @@
 #include <iostream>
 #include <fstream>
 
-void parseInitialFile(const std::experimental::filesystem::directory_entry path, std::vector<std::pair<int,int>>& coordinates, std::vector<int>& demand){
+void parseInitialFile(const std::experimental::filesystem::directory_entry path, std::vector<std::pair<int,int>>& coordinates, std::vector<int>& demand, int& optimalValue){
     std::string line;
     std::ifstream fs (path.path().string());
     int dimension;
     std::istringstream tokenStream;
     std::string token;
 
-    //Skipping 3 lines and using the 4th
-    for(int i=0; i<4;i++){
+    //Skipping 1 lines and using the 2nd
+    for(int i=0; i<2;i++){
+        getline(fs, line);
+    }
+    //parsing the 2nd line
+    tokenStream.str(line);
+    for(int i=0; i<13; i++){
+        getline(tokenStream, token, ' ');
+    }
+    token = token.substr(0, token.size()-2);
+    optimalValue = stoi(token);
+    tokenStream.clear();
+
+    //Skipping 1 lines and using the 4th
+    for(int i=0; i<2;i++){
         getline(fs, line);
     }
     //parsing the 4th line

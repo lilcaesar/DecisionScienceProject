@@ -6,6 +6,6 @@
 #include <string>
 #include <vector>
 
-void parseInitialFile(const std::experimental::filesystem::directory_entry path, std::vector<std::pair<int,int>>& coordinates, std::vector<int>& demand);
+void parseInitialFile(const std::experimental::filesystem::directory_entry path, std::vector<std::pair<int,int>>& coordinates, std::vector<int>& demand, int &optimalValue);
 
 #endif // GENERICFUNCTIONS_H
