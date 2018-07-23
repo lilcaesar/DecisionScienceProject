@@ -3,11 +3,11 @@
 #include<math.h>
 #include<bits/stdc++.h>
 
-bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
+/*bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
                const std::pair<float,std::pair<int,int>> &b)
 {
        return (a.first > b.first);
-}
+}*/
 
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
     unsigned long dimension = coordinates.size();
@@ -39,13 +39,13 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
         }
     }
 
-    for(unsigned long i = 0; i<savings.size()-1; i++){
-        for(unsigned long j= i+1; j<savings.size(); j++){
-            lista.push_back(std::make_pair(savings[i][j],std::make_pair(i+1,j+1)));
+    for(unsigned long i = 0; i<savings.size(); i++){
+        for(unsigned long j= i+1; j<savings.size()+1; j++){
+            lista.push_back(std::make_pair(savings[i][j],std::make_pair(i,j)));
         }
     }
 
-    sort(lista.begin(), lista.end(), sortinrev);
+    //sort(lista.begin(), lista.end(), sortinrev);
 }
 
 void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long dimension){
