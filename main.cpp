@@ -19,18 +19,21 @@ int main()
         parseInitialFile(p, coordinates, demand, optimalValue);
 
         computeDistanceTable(coordinates,distances);
-        computeSavingsTable(distances, savings);
+
+        std::vector<std::pair<float,std::pair<int,int>>> sequentialList;
+
+        computeSavingsTable(distances, savings, sequentialList);
+
+        std::vector<std::pair<float,std::pair<int,int>>> parallelList(sequentialList);
 
         boost::filesystem::path temporaryFilePath(p.path().string());
         std::string outputFileName = "output/solution-" + temporaryFilePath.stem().string() + ".txt";
         std::ofstream outputFile(outputFileName);
 
-        std::vector<std::vector<int>> finalRoutes;
-        std::vector<std::vector<int>> initialRoutes;
-        createInitialRoutes(initialRoutes, distances.size());
+        std::vector<std::vector<int>> routes;
+        createInitialRoutes(routes, distances.size());
 
-        sequentialClarkAndWright(demand, savings,initialRoutes, finalRoutes);
-
+        sequentialClarkAndWright(demand, sequentialList, routes);
 
         outputFile.close();
 

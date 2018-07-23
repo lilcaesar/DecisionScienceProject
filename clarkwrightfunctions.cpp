@@ -25,7 +25,7 @@ void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, 
     }
 }
 
-void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::vector<std::vector<float>> &savings){
+void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::vector<std::vector<float>> &savings, std::vector<std::pair<float,std::pair<int,int>>> &lista){
     unsigned long dimension = distances.size()-1;
     savings.resize(dimension);
     for(unsigned long i=1; i<dimension+1;i++){
@@ -38,6 +38,14 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
             }
         }
     }
+
+    for(unsigned long i = 0; i<savings.size()-1; i++){
+        for(unsigned long j= i+1; j<savings.size(); j++){
+            lista.push_back(std::make_pair(savings[i][j],std::make_pair(i+1,j+1)));
+        }
+    }
+
+    sort(lista.begin(), lista.end(), sortinrev);
 }
 
 void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long dimension){
@@ -50,16 +58,74 @@ void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long d
     }
 }
 
-void sequentialClarkAndWright(const std::vector<int> &demand, const std::vector<std::vector<float>> &savings, std::vector<std::vector<int>> &initialRoutes, std::vector<std::vector<int>> &finalRoutes){
-    std::vector<std::pair<float,std::pair<int,int>>> lista;
+void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &sequentialList, std::vector<std::vector<int>> &routes){
+    unsigned long routeIndex=0;
+    int capacity;
+    unsigned long savingIndex=0;
+    while ((!sequentialList.empty())&&(routeIndex<routes.size())) {
+        bool found = false;
+        bool isFirst = false;
+        capacity=100 - demand[routes[routeIndex][1]];
+        while(capacity > 0){
+            if(found){
+                //aggiungo route
+                int foundValue;
+                int addedValue;
+                float savingValue = sequentialList[savingIndex].first;
+                routes[routeIndex].pop_back();
+                if(isFirst){
+                    foundValue=sequentialList[savingIndex].second.first;
+                    addedValue=sequentialList[savingIndex].second.second;
+                    routes[routeIndex].push_back(addedValue);
+                }else{
+                    foundValue=sequentialList[savingIndex].second.second;
+                    addedValue=sequentialList[savingIndex].second.first;
+                    routes[routeIndex].push_back(addedValue);
+                }
+                routes[routeIndex].push_back(0);
 
-    for(unsigned long i = 0; i<savings.size()-1; i++){
-        for(unsigned long j= i+1; j<savings.size(); j++){
-            lista.push_back(std::make_pair(savings[i][j],std::make_pair(i+1,j+1)));
+                for(unsigned long i=savingIndex; i<sequentialList.size(); i++){
+                    if((sequentialList[i].second.first == foundValue)||(sequentialList[i].second.second == foundValue)){
+                        sequentialList.erase(sequentialList.begin() + i);
+                    }
+                }
+
+                for(unsigned long i = routeIndex+1; i<routes.size(); i++){
+                    if(routes[i][1]==addedValue){
+                        routes.erase(routes.begin()+i);
+                        i=routes.size();
+                    }
+                }
+
+                capacity -= demand[addedValue];
+                savingIndex=0;
+                found=false;
+            }else{
+                if(savingIndex>=sequentialList.size()){
+                    capacity=-1;
+
+                    for(unsigned long i=0; i<sequentialList.size(); i++){
+                        if((sequentialList[i].second.first == routes[routeIndex][routes[routeIndex].size()-2])
+                                ||(sequentialList[i].second.second == routes[routeIndex][routes[routeIndex].size()-2])){
+                            sequentialList.erase(sequentialList.begin() + i);
+                        }
+                    }
+
+                }else{
+                    if((sequentialList[savingIndex].second.first == routes[routeIndex][routes[routeIndex].size()-2])
+                            && (capacity-demand[sequentialList[savingIndex].second.second] >= 0)){
+                        found=true;
+                        isFirst = true;
+                    }else if((sequentialList[savingIndex].second.second == routes[routeIndex][routes[routeIndex].size()-2])
+                             && (capacity-demand[sequentialList[savingIndex].second.first] >= 0)){
+                        found=true;
+                        isFirst=false;
+                    }else{
+                        savingIndex++;
+                    }
+                }
+            }
         }
+        routeIndex++;
     }
-
-    sort(lista.begin(), lista.end(), sortinrev);
-
-
 }
