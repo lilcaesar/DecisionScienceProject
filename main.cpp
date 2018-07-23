@@ -1,5 +1,7 @@
 #include <experimental/filesystem>
 #include <iostream>
+#include <fstream>
+#include <boost/filesystem.hpp>
 
 #include <genericfunctions.h>
 #include <clarkwrightfunctions.h>
@@ -19,7 +21,18 @@ int main()
         computeDistanceTable(coordinates,distances);
         computeSavingsTable(distances, savings);
 
+        boost::filesystem::path temporaryFilePath(p.path().string());
+        std::string outputFileName = "output/solution-" + temporaryFilePath.stem().string() + ".txt";
+        std::ofstream outputFile(outputFileName);
 
+        std::vector<std::vector<int>> finalRoutes;
+        std::vector<std::vector<int>> initialRoutes;
+        createInitialRoutes(initialRoutes, distances.size());
+
+        sequentialClarkAndWright(demand, savings,initialRoutes, finalRoutes);
+
+
+        outputFile.close();
 
         coordinates.clear();
         demand.clear();

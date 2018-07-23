@@ -1,6 +1,13 @@
 #include "clarkwrightfunctions.h"
 
 #include<math.h>
+#include<bits/stdc++.h>
+
+bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
+               const std::pair<float,std::pair<int,int>> &b)
+{
+       return (a.first > b.first);
+}
 
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
     unsigned long dimension = coordinates.size();
@@ -31,4 +38,28 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
             }
         }
     }
+}
+
+void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long dimension){
+    for(unsigned long i = 0; i < dimension; i++){
+        std::vector<int> row;
+        row.push_back(0);
+        row.push_back(i+1);
+        row.push_back(0);
+        routes.push_back(row);
+    }
+}
+
+void sequentialClarkAndWright(const std::vector<int> &demand, const std::vector<std::vector<float>> &savings, std::vector<std::vector<int>> &initialRoutes, std::vector<std::vector<int>> &finalRoutes){
+    std::vector<std::pair<float,std::pair<int,int>>> lista;
+
+    for(unsigned long i = 0; i<savings.size()-1; i++){
+        for(unsigned long j= i+1; j<savings.size(); j++){
+            lista.push_back(std::make_pair(savings[i][j],std::make_pair(i+1,j+1)));
+        }
+    }
+
+    sort(lista.begin(), lista.end(), sortinrev);
+
+
 }
