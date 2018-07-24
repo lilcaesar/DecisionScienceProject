@@ -7,15 +7,15 @@
 #include <clarkwrightfunctions.h>
 
 
-bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
+/*bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
                const std::pair<float,std::pair<int,int>> &b)
 {
        return (a.first > b.first);
-}
+}*/
 
 int main()
 {
-    /*std::vector<std::pair<int,int>> coordinates;
+    std::vector<std::pair<int,int>> coordinates;
     std::vector<int> demand;
     std::vector<std::vector<float>> distances;
     std::vector<std::vector<float>> savings;
@@ -48,12 +48,14 @@ int main()
         demand.clear();
         distances.clear();
         savings.clear();
-    }*/
+    }
 
 
-    std::vector<int> demand;
+    /*std::vector<int> demand;
     std::vector<std::vector<float>> savings;
 
+
+    demand.push_back(0);
     demand.push_back(37);
     demand.push_back(35);
     demand.push_back(30);
@@ -62,6 +64,18 @@ int main()
 
     std::vector<float> vettore;
 
+
+    vettore.push_back(-1);
+    vettore.push_back(-1);
+    vettore.push_back(-1);
+    vettore.push_back(-1);
+    vettore.push_back(-1);
+    vettore.push_back(-1);
+
+    savings.push_back(vettore);
+    vettore.clear();
+
+    vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(38);
     vettore.push_back(19);
@@ -71,6 +85,8 @@ int main()
     savings.push_back(vettore);
     vettore.clear();
 
+
+    vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(13);
@@ -80,6 +96,8 @@ int main()
     savings.push_back(vettore);
     vettore.clear();
 
+
+    vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(-1);
@@ -89,6 +107,8 @@ int main()
     savings.push_back(vettore);
     vettore.clear();
 
+
+    vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(-1);
     vettore.push_back(-1);
@@ -99,19 +119,18 @@ int main()
 
     std::vector<std::pair<float,std::pair<int,int>>> sequentialList;
 
-    for(unsigned long i = 0; i<savings.size(); i++){
+    for(unsigned long i = 1; i<savings.size(); i++){
         for(unsigned long j= i+1; j<savings.size()+1; j++){
-            sequentialList.push_back(std::make_pair(savings[i][j],std::make_pair(i+1,j+1)));
+            sequentialList.push_back(std::make_pair(savings[i][j],std::make_pair(i,j)));
         }
     }
 
     sort(sequentialList.begin(), sequentialList.end(), sortinrev);
 
     std::vector<std::vector<int>> routes;
-    createInitialRoutes(routes, 6);
+    createInitialRoutes(routes, 5);
 
-    sequentialClarkAndWright(demand, sequentialList, routes);
+    sequentialClarkAndWright(demand, sequentialList, routes);*/
 
-    int cisao=0;
     return 0;
 }

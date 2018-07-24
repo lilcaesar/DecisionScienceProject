@@ -3,11 +3,11 @@
 #include<math.h>
 #include<bits/stdc++.h>
 
-/*bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
+bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
                const std::pair<float,std::pair<int,int>> &b)
 {
        return (a.first > b.first);
-}*/
+}
 
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
     unsigned long dimension = coordinates.size();
@@ -26,18 +26,19 @@ void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, 
 }
 
 void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::vector<std::vector<float>> &savings, std::vector<std::pair<float,std::pair<int,int>>> &lista){
-    unsigned long dimension = distances.size()-1;
-    savings.resize(dimension);
-    for(unsigned long i=1; i<dimension+1;i++){
-        savings[i-1].resize(dimension);
-        for(unsigned long j=1; j<dimension+1;j++){
-            if(i-1==j-1){
-                savings[i-1][j-1]=-1;
+    unsigned long dimension = distances.size();
+    savings.resize(dimension-1);
+    for(unsigned long i=0; i<dimension-1;i++){
+        savings[i].resize(dimension);
+        for(unsigned long j=0; j<dimension;j++){
+            if((i==0)||(j<=i)){
+                savings[i][j]=-1;
             }else{
-                savings[i-1][j-1]= (distances[0][i]*2 + distances[0][j]*2)-(distances[0][i]+distances[0][j]+distances[i][j]);
+                savings[i][j]= (distances[0][i]*2 + distances[0][j]*2)-(distances[0][i]+distances[0][j]+distances[i][j]);
             }
         }
     }
+
 
     for(unsigned long i = 0; i<savings.size(); i++){
         for(unsigned long j= i+1; j<savings.size()+1; j++){
@@ -45,7 +46,7 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
         }
     }
 
-    //sort(lista.begin(), lista.end(), sortinrev);
+    sort(lista.begin(), lista.end(), sortinrev);
 }
 
 void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long dimension){
@@ -61,11 +62,11 @@ void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long d
 void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &sequentialList, std::vector<std::vector<int>> &routes){
     unsigned long routeIndex=0;
     int capacity;
-    unsigned long savingIndex=0;
     while ((!sequentialList.empty())&&(routeIndex<routes.size())) {
         bool found = false;
         bool isFirst = false;
         capacity=100 - demand[routes[routeIndex][1]];
+        unsigned long savingIndex=0;
         while(capacity > 0){
             if(found){
                 //aggiungo route
@@ -87,6 +88,8 @@ void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::p
                 for(unsigned long i=savingIndex; i<sequentialList.size(); i++){
                     if((sequentialList[i].second.first == foundValue)||(sequentialList[i].second.second == foundValue)){
                         sequentialList.erase(sequentialList.begin() + i);
+                        i--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
+                        //successiva che potrebbe avere un valore non valido
                     }
                 }
 
@@ -108,6 +111,7 @@ void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::p
                         if((sequentialList[i].second.first == routes[routeIndex][routes[routeIndex].size()-2])
                                 ||(sequentialList[i].second.second == routes[routeIndex][routes[routeIndex].size()-2])){
                             sequentialList.erase(sequentialList.begin() + i);
+                            i--;
                         }
                     }
 
