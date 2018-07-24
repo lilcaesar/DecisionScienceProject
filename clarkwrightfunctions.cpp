@@ -16,7 +16,7 @@ void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, 
         distances[i].resize(dimension);
         for(unsigned long j=0; j<dimension;j++){
             if(i == j){
-                distances[i][j]=-1;
+                distances[i][j]=0;
             }else{
                 distances[i][j]=sqrtf(static_cast<float> (pow((coordinates[i].first)-(coordinates[j].first),2.0) +
                                                 pow((coordinates[i].second)-(coordinates[j].second),2.0)));
@@ -32,7 +32,7 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
         savings[i].resize(dimension);
         for(unsigned long j=0; j<dimension;j++){
             if((i==0)||(j<=i)){
-                savings[i][j]=-1;
+                savings[i][j]=0;
             }else{
                 savings[i][j]= (distances[0][i]*2 + distances[0][j]*2)-(distances[0][i]+distances[0][j]+distances[i][j]);
             }
@@ -116,6 +116,13 @@ void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::p
                     }
 
                 }else{
+                    /*Nella soluzione per il file A-n61-k9 la prima stazione da aggiungere dovrebbe essere
+                     * la 14, che nel nostro caso si trova in posizione 1670 con un saving value di 0,33129 circa
+                     * if((sequentialList[savingIndex].second.first==14 && sequentialList[savingIndex].second.second == 1)
+                            ||(sequentialList[savingIndex].second.first==1 && sequentialList[savingIndex].second.second == 14)){
+                        float valore = sequentialList[savingIndex].first;
+                        int ciao = 0;
+                    }*/
                     if((sequentialList[savingIndex].second.first == routes[routeIndex][routes[routeIndex].size()-2])
                             && (capacity-demand[sequentialList[savingIndex].second.second] >= 0)){
                         found=true;
@@ -131,5 +138,24 @@ void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::p
             }
         }
         routeIndex++;
+    }
+}
+
+float computeCost(const std::vector<std::vector<float>> &distances, const std::vector<int> &route){
+    float cost=0;
+    for(unsigned long j=0; j<route.size()-1; j++){
+        cost+= distances[j][j+1];
+    }
+    return cost;
+}
+
+void saveResults(const std::vector<std::vector<float> > &distances, const std::vector<std::vector<int> > &routes, std::ofstream &outputFile){
+    for(unsigned long i=0; i<routes.size(); i++){
+        std::string line = "Route #" + std::to_string(i+1) + " Cost: " + std::to_string(static_cast<int>(computeCost(distances,routes[i]))) + ",   ";
+        for(unsigned long j=0; j<routes[i].size(); j++){
+            line += " " + std::to_string(routes[i][j]);
+        }
+        line+="\n";
+        outputFile << line;
     }
 }

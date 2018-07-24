@@ -42,6 +42,8 @@ int main()
 
         sequentialClarkAndWright(demand, sequentialList, routes);
 
+        saveResults(distances, routes, outputFile);
+
         outputFile.close();
 
         coordinates.clear();
