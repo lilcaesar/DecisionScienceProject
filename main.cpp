@@ -23,6 +23,8 @@ int main()
 
     std::string finalTableFileName = "output/FINAL_TABLE.txt";
     std::ofstream finalTableFile(finalTableFileName);
+
+    finalTableFile << "\n\nSequential\n";
     finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
 
     for(const std::experimental::filesystem::directory_entry & p : std::experimental::filesystem::directory_iterator(path)){
@@ -53,6 +55,8 @@ int main()
 
         duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
 
+        outputFile << "\n\nSequential\n";
+
         saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
 
         //Parallel
@@ -64,6 +68,11 @@ int main()
 
         duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
 
+
+        finalTableFile << "\n\nParallel\n";
+        finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
+
+        outputFile << "\n\nParallel\n";
         saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
 
         outputFile.close();

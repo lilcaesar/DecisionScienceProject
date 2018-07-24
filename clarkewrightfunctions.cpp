@@ -6,7 +6,7 @@
 bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
                const std::pair<float,std::pair<int,int>> &b)
 {
-       return (a.first > b.first);
+    return (a.first > b.first);
 }
 
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
@@ -19,7 +19,7 @@ void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, 
                 distances[i][j]=0;
             }else{
                 distances[i][j]=sqrtf(static_cast<float> (pow((coordinates[i].first)-(coordinates[j].first),2.0) +
-                                                pow((coordinates[i].second)-(coordinates[j].second),2.0)));
+                                                          pow((coordinates[i].second)-(coordinates[j].second),2.0)));
             }
         }
     }
@@ -142,16 +142,55 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
 }
 
 void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &parallelList, std::vector<std::vector<int> > &routes){
-    /*int capacity;
-    while(!parallelList.empty()){
-        capacity=100 - demand[routes[???][1]];
-        while (capacity>0) {
-            for(unsigned long i=0; i< routes.size(); i++){
-                if(routes[i][routes[i].size()-2] == parallelList[0].second.first){
-                }
+    std::vector<std::pair<std::vector<int>, int>> routesWithCapacity;
+
+    for(unsigned long i=0; i< routes.size(); i++){
+        routesWithCapacity[i].second = demand[i+1];
+    }
+
+    unsigned long savingsIndex=0;
+
+    unsigned long route1,route2;
+    route1=route2=0;
+
+    bool found=false;
+    for(savingsIndex = 0; savingsIndex<parallelList.size(); savingsIndex++){
+        if(found){
+            savingsIndex = 0;
+            found = false;
+        }
+        for(unsigned long i=0; i<routesWithCapacity.size(); i++){
+            if(parallelList[savingsIndex].second.first == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]){
+                route1 = i;
+            }
+            if(parallelList[savingsIndex].second.second == routesWithCapacity[i].first[1]){
+                route2=i;
             }
         }
-    }*/
+        if((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100){
+            int foundValue= routesWithCapacity[route1].first[routesWithCapacity[route1].first.size()-2];
+            routesWithCapacity[route1].first.pop_back();
+            routesWithCapacity[route2].first.erase(routesWithCapacity[route2].first.begin());
+            routesWithCapacity[route1].first.insert(routesWithCapacity[route1].first.end(), routesWithCapacity[route2].first.begin(), routesWithCapacity[route2].first.end());
+            routesWithCapacity[route1].second+=routesWithCapacity[route2].second;
+            routesWithCapacity.erase(routesWithCapacity.begin()+route2);
+
+            for(unsigned long j=savingsIndex; j<parallelList.size(); j++){
+                if((parallelList[j].second.first == foundValue)||(parallelList[j].second.second == foundValue)){
+                    parallelList.erase(parallelList.begin() + j);
+                    j--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
+                    //successiva che potrebbe avere un valore non valido
+                }
+            }
+
+            found = true;
+        }
+    }
+
+    routes.clear();
+    for(unsigned long i = 0; i < routesWithCapacity.size(); i++){
+        routes.push_back(routesWithCapacity[i].first);
+    }
 }
 
 float computeCost(const std::vector<std::vector<float>> &distances, const std::vector<int> &route){
