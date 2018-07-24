@@ -11,11 +11,11 @@ LIBS += -lboost_filesystem -lboost_system
 
 SOURCES += \
         main.cpp \
-    clarkwrightfunctions.cpp \
     semaphore.cpp \
-    genericfunctions.cpp
+    genericfunctions.cpp \
+    clarkewrightfunctions.cpp
 
 HEADERS += \
-    clarkwrightfunctions.h \
     semaphore.h \
-    genericfunctions.h
+    genericfunctions.h \
+    clarkewrightfunctions.h

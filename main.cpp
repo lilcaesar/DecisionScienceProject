@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 
 #include <genericfunctions.h>
-#include <clarkwrightfunctions.h>
+#include <clarkewrightfunctions.h>
 
 
 /*bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
@@ -20,6 +20,10 @@ int main()
     std::vector<std::vector<float>> distances;
     std::vector<std::vector<float>> savings;
     std::string path = "/root/Scrivania/DecisionScienceProjectData";
+
+    std::string finalTableFileName = "output/FINAL_TABLE.txt";
+    std::ofstream finalTableFile(finalTableFileName);
+    finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
 
     for(const std::experimental::filesystem::directory_entry & p : std::experimental::filesystem::directory_iterator(path)){
         int optimalValue;
@@ -40,9 +44,27 @@ int main()
         std::vector<std::vector<int>> routes;
         createInitialRoutes(routes, distances.size());
 
-        sequentialClarkAndWright(demand, sequentialList, routes);
+        std::clock_t start;
+        double duration;
 
-        saveResults(distances, routes, outputFile);
+        start = std::clock();
+
+        sequentialClarkeAndWright(demand, sequentialList, routes);
+
+        duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
+
+        saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
+
+        //Parallel
+        routes.clear();
+        createInitialRoutes(routes, distances.size());
+        start = std::clock();
+
+        parallelClarkeAndWright(demand, parallelList, routes);
+
+        duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
+
+        saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
 
         outputFile.close();
 
@@ -51,6 +73,8 @@ int main()
         distances.clear();
         savings.clear();
     }
+
+    finalTableFile.close();
 
 
     /*std::vector<int> demand;

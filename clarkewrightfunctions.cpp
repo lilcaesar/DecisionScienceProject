@@ -1,4 +1,4 @@
-#include "clarkwrightfunctions.h"
+#include "clarkewrightfunctions.h"
 
 #include<math.h>
 #include<bits/stdc++.h>
@@ -59,7 +59,7 @@ void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long d
     }
 }
 
-void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &sequentialList, std::vector<std::vector<int>> &routes){
+void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &sequentialList, std::vector<std::vector<int>> &routes){
     unsigned long routeIndex=0;
     int capacity;
     while ((!sequentialList.empty())&&(routeIndex<routes.size())) {
@@ -141,6 +141,19 @@ void sequentialClarkAndWright(const std::vector<int> &demand, std::vector<std::p
     }
 }
 
+void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &parallelList, std::vector<std::vector<int> > &routes){
+    /*int capacity;
+    while(!parallelList.empty()){
+        capacity=100 - demand[routes[???][1]];
+        while (capacity>0) {
+            for(unsigned long i=0; i< routes.size(); i++){
+                if(routes[i][routes[i].size()-2] == parallelList[0].second.first){
+                }
+            }
+        }
+    }*/
+}
+
 float computeCost(const std::vector<std::vector<float>> &distances, const std::vector<int> &route){
     float cost=0;
     for(unsigned long j=0; j<route.size()-1; j++){
@@ -149,13 +162,20 @@ float computeCost(const std::vector<std::vector<float>> &distances, const std::v
     return cost;
 }
 
-void saveResults(const std::vector<std::vector<float> > &distances, const std::vector<std::vector<int> > &routes, std::ofstream &outputFile){
+void saveResults(const std::vector<std::vector<float> > &distances, const std::vector<std::vector<int> > &routes, std::ofstream &outputFile, double duration, std::ofstream &finalTableFile, int optimalValue, std::string inputFileName){
+    float totalCost=0;
     for(unsigned long i=0; i<routes.size(); i++){
-        std::string line = "Route #" + std::to_string(i+1) + " Cost: " + std::to_string(static_cast<int>(computeCost(distances,routes[i]))) + ",   ";
+        float cost= computeCost(distances,routes[i]);
+        totalCost += cost;
+        std::string line = "Route #" + std::to_string(i+1) + " Cost: " + std::to_string(static_cast<int>(cost)) + ",   ";
         for(unsigned long j=0; j<routes[i].size(); j++){
             line += " " + std::to_string(routes[i][j]);
         }
         line+="\n";
         outputFile << line;
     }
+    outputFile << "\n" << "Total cost: " + std::to_string(static_cast<int>(totalCost));
+    outputFile << "\n" << "Duration: " + std::to_string(duration) + "s";
+
+    finalTableFile << inputFileName + "   "<< distances.size()-1 << "         " + std::to_string(static_cast<int>(totalCost)) +  "    " << duration << "s" << "     " + std::to_string(static_cast<int>(totalCost) - optimalValue) + "\n";
 }
