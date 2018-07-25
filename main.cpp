@@ -24,9 +24,8 @@ int main()
     std::string finalTableFileName = "output/FINAL_TABLE.txt";
     std::ofstream finalTableFile(finalTableFileName);
 
-    finalTableFile << "\n\nSequential\n";
-    finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
 
+    finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
     for(const std::experimental::filesystem::directory_entry & p : std::experimental::filesystem::directory_iterator(path)){
         int optimalValue;
         parseInitialFile(p, coordinates, demand, optimalValue);
@@ -44,7 +43,7 @@ int main()
         std::ofstream outputFile(outputFileName);
 
         std::vector<std::vector<int>> routes;
-        createInitialRoutes(routes, distances.size());
+        createInitialRoutes(routes, distances.size()-1);
 
         std::clock_t start;
         double duration;
@@ -55,13 +54,14 @@ int main()
 
         duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
 
-        outputFile << "\n\nSequential\n";
+        outputFile << "Sequential\n";
+        finalTableFile << "Sequential\n";
 
         saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
 
         //Parallel
         routes.clear();
-        createInitialRoutes(routes, distances.size());
+        createInitialRoutes(routes, distances.size()-1);
         start = std::clock();
 
         parallelClarkeAndWright(demand, parallelList, routes);
@@ -69,11 +69,12 @@ int main()
         duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
 
 
-        finalTableFile << "\n\nParallel\n";
-        finalTableFile << "Name       Clients    O.F.    Duration     Gap\n\n";
+        finalTableFile << "\nParallel\n";
 
         outputFile << "\n\nParallel\n";
         saveResults(distances, routes, outputFile, duration, finalTableFile, optimalValue, temporaryFilePath.stem().string());
+
+        finalTableFile << "\n\n";
 
         outputFile.close();
 

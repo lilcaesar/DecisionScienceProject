@@ -9,6 +9,13 @@ bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
     return (a.first > b.first);
 }
 
+template<typename T>
+void pop_front(std::vector<T>& vec)
+{
+    //assert(!vec.empty());
+    vec.erase(vec.begin());
+}
+
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
     unsigned long dimension = coordinates.size();
     distances.resize(dimension);
@@ -145,7 +152,7 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
     std::vector<std::pair<std::vector<int>, int>> routesWithCapacity;
 
     for(unsigned long i=0; i< routes.size(); i++){
-        routesWithCapacity[i].second = demand[i+1];
+        routesWithCapacity.push_back(std::make_pair(routes[i], demand[i+1]));
     }
 
     unsigned long savingsIndex=0;
@@ -154,23 +161,30 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
     route1=route2=0;
 
     bool found=false;
+    bool foundRoutes=false;
     for(savingsIndex = 0; savingsIndex<parallelList.size(); savingsIndex++){
         if(found){
             savingsIndex = 0;
             found = false;
+            foundRoutes=false;
         }
         for(unsigned long i=0; i<routesWithCapacity.size(); i++){
             if(parallelList[savingsIndex].second.first == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]){
                 route1 = i;
-            }
-            if(parallelList[savingsIndex].second.second == routesWithCapacity[i].first[1]){
-                route2=i;
+                for(unsigned long k=0; k<routesWithCapacity.size(); k++){
+                    if(parallelList[savingsIndex].second.second == routesWithCapacity[k].first[1]){
+                        route2=k;
+                        foundRoutes=true;
+                        k=routesWithCapacity.size();
+                    }
+                }
+                i = routesWithCapacity.size();
             }
         }
-        if((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100){
+        if(((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100)&&(foundRoutes)){
             int foundValue= routesWithCapacity[route1].first[routesWithCapacity[route1].first.size()-2];
             routesWithCapacity[route1].first.pop_back();
-            routesWithCapacity[route2].first.erase(routesWithCapacity[route2].first.begin());
+            pop_front(routesWithCapacity[route2].first);
             routesWithCapacity[route1].first.insert(routesWithCapacity[route1].first.end(), routesWithCapacity[route2].first.begin(), routesWithCapacity[route2].first.end());
             routesWithCapacity[route1].second+=routesWithCapacity[route2].second;
             routesWithCapacity.erase(routesWithCapacity.begin()+route2);
@@ -182,7 +196,6 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                     //successiva che potrebbe avere un valore non valido
                 }
             }
-
             found = true;
         }
     }
@@ -216,5 +229,5 @@ void saveResults(const std::vector<std::vector<float> > &distances, const std::v
     outputFile << "\n" << "Total cost: " + std::to_string(static_cast<int>(totalCost));
     outputFile << "\n" << "Duration: " + std::to_string(duration) + "s";
 
-    finalTableFile << inputFileName + "   "<< distances.size()-1 << "         " + std::to_string(static_cast<int>(totalCost)) +  "    " << duration << "s" << "     " + std::to_string(static_cast<int>(totalCost) - optimalValue) + "\n";
+    finalTableFile << inputFileName + "   "<< distances.size()-1 << "         " + std::to_string(static_cast<int>(totalCost)) +  "    " << duration << "s" << "     " + std::to_string((totalCost - optimalValue)/optimalValue*100) + "\n";
 }
