@@ -162,11 +162,16 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
 
     bool found=false;
     bool foundRoutes=false;
+    bool erased = false;
     for(savingsIndex = 0; savingsIndex<parallelList.size(); savingsIndex++){
         if(found){
             savingsIndex--;
             found = false;
             foundRoutes=false;
+        }
+        if(erased){
+            savingsIndex--;
+            erased=false;
         }
         for(unsigned long i=0; i<routesWithCapacity.size(); i++){
             int n1 = parallelList[savingsIndex].second.first;
@@ -214,6 +219,8 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
             found = true;
             savingsIndex = 0;
         }else{
+            parallelList.erase(parallelList.begin()+savingsIndex);
+            erased = true;
             foundRoutes=false;
         }
     }
