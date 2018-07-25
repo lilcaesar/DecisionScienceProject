@@ -164,11 +164,13 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
     bool foundRoutes=false;
     for(savingsIndex = 0; savingsIndex<parallelList.size(); savingsIndex++){
         if(found){
-            savingsIndex = 0;
+            savingsIndex--;
             found = false;
             foundRoutes=false;
         }
         for(unsigned long i=0; i<routesWithCapacity.size(); i++){
+            int n1 = parallelList[savingsIndex].second.first;
+            int n2 = parallelList[savingsIndex].second.second;
             if(parallelList[savingsIndex].second.first == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]){
                 route1 = i;
                 for(unsigned long k=0; k<routesWithCapacity.size(); k++){
@@ -178,6 +180,19 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                         k=routesWithCapacity.size();
                     }
                 }
+            }
+            if((parallelList[savingsIndex].second.second == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]
+                && !foundRoutes)){
+                route1 = i;
+                for(unsigned long k=0; k<routesWithCapacity.size(); k++){
+                    if(parallelList[savingsIndex].second.first == routesWithCapacity[k].first[1]){
+                        route2=k;
+                        foundRoutes=true;
+                        k=routesWithCapacity.size();
+                    }
+                }
+            }
+            if(foundRoutes){
                 i = routesWithCapacity.size();
             }
         }
@@ -189,7 +204,7 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
             routesWithCapacity[route1].second+=routesWithCapacity[route2].second;
             routesWithCapacity.erase(routesWithCapacity.begin()+route2);
 
-            for(unsigned long j=savingsIndex; j<parallelList.size(); j++){
+            for(unsigned long j=0; j<parallelList.size(); j++){
                 if((parallelList[j].second.first == foundValue)||(parallelList[j].second.second == foundValue)){
                     parallelList.erase(parallelList.begin() + j);
                     j--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
@@ -197,6 +212,7 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                 }
             }
             found = true;
+            savingsIndex = 0;
         }
     }
 

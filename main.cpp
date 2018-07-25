@@ -166,7 +166,8 @@ int main()
     std::vector<std::vector<int>> routes;
     createInitialRoutes(routes, 5);
 
-    sequentialClarkAndWright(demand, sequentialList, routes);*/
+    parallelClarkeAndWright(demand, sequentialList, routes);
+    int ciao=0;*/
 
     return 0;
 }
