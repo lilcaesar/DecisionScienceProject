@@ -47,7 +47,7 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
     }
 
 
-    for(unsigned long i = 0; i<savings.size(); i++){
+    for(unsigned long i = 1; i<savings.size(); i++){
         for(unsigned long j= i+1; j<savings.size()+1; j++){
             lista.push_back(std::make_pair(savings[i][j],std::make_pair(i,j)));
         }
@@ -123,13 +123,6 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                     }
 
                 }else{
-                    /*Nella soluzione per il file A-n61-k9 la prima stazione da aggiungere dovrebbe essere
-                     * la 14, che nel nostro caso si trova in posizione 1670 con un saving value di 0,33129 circa
-                     * if((sequentialList[savingIndex].second.first==14 && sequentialList[savingIndex].second.second == 1)
-                            ||(sequentialList[savingIndex].second.first==1 && sequentialList[savingIndex].second.second == 14)){
-                        float valore = sequentialList[savingIndex].first;
-                        int ciao = 0;
-                    }*/
                     if((sequentialList[savingIndex].second.first == routes[routeIndex][routes[routeIndex].size()-2])
                             && (capacity-demand[sequentialList[savingIndex].second.second] >= 0)){
                         found=true;
