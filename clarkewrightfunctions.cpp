@@ -213,6 +213,8 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
             }
             found = true;
             savingsIndex = 0;
+        }else{
+            foundRoutes=false;
         }
     }
 
