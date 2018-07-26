@@ -163,10 +163,17 @@ int main()
 
     sort(sequentialList.begin(), sequentialList.end(), sortinrev);
 
+
+    std::vector<std::pair<float,std::pair<int,int>>> sequentialList2;
+    for(unsigned long i=0; i<sequentialList.size(); i++){
+        sequentialList2.push_back(sequentialList[i]);
+        sequentialList2.push_back(std::make_pair(sequentialList[i].first, std::make_pair(sequentialList[i].second.second, sequentialList[i].second.first)));
+    }
+
     std::vector<std::vector<int>> routes;
     createInitialRoutes(routes, 5);
 
-    parallelClarkeAndWright(demand, sequentialList, routes);
+    parallelClarkeAndWright2(demand, sequentialList2, routes);
     int ciao=0;*/
 
     return 0;
