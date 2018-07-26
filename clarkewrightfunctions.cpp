@@ -50,6 +50,7 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
     for(unsigned long i = 1; i<savings.size(); i++){
         for(unsigned long j= i+1; j<savings.size()+1; j++){
             lista.push_back(std::make_pair(savings[i][j],std::make_pair(i,j)));
+            lista.push_back(std::make_pair(savings[i][j],std::make_pair(j,i)));
         }
     }
 
@@ -179,8 +180,8 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                     }
                 }
             }
-            if((parallelList[savingsIndex].second.second == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]
-                && !foundRoutes)){
+            /*if((parallelList[savingsIndex].second.second == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2])
+                && (!foundRoutes)){
                 route1 = i;
                 for(unsigned long k=0; k<routesWithCapacity.size(); k++){
                     if(parallelList[savingsIndex].second.first == routesWithCapacity[k].first[1]){
@@ -189,28 +190,34 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                         k=routesWithCapacity.size();
                     }
                 }
-            }
+            }*/
             if(foundRoutes){
                 i = routesWithCapacity.size();
             }
         }
-        if(((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100)&&(foundRoutes)){
-            int foundValue= routesWithCapacity[route1].first[routesWithCapacity[route1].first.size()-2];
-            routesWithCapacity[route1].first.pop_back();
-            pop_front(routesWithCapacity[route2].first);
-            routesWithCapacity[route1].first.insert(routesWithCapacity[route1].first.end(), routesWithCapacity[route2].first.begin(), routesWithCapacity[route2].first.end());
-            routesWithCapacity[route1].second+=routesWithCapacity[route2].second;
-            routesWithCapacity.erase(routesWithCapacity.begin()+route2);
+        if(foundRoutes){
+            if((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100){
+                int foundValue= routesWithCapacity[route1].first[routesWithCapacity[route1].first.size()-2];
+                routesWithCapacity[route1].first.pop_back();
+                pop_front(routesWithCapacity[route2].first);
+                routesWithCapacity[route1].first.insert(routesWithCapacity[route1].first.end(), routesWithCapacity[route2].first.begin(), routesWithCapacity[route2].first.end());
+                routesWithCapacity[route1].second+=routesWithCapacity[route2].second;
+                routesWithCapacity.erase(routesWithCapacity.begin()+route2);
 
-            for(unsigned long j=0; j<parallelList.size(); j++){
-                if((parallelList[j].second.first == foundValue)||(parallelList[j].second.second == foundValue)){
-                    parallelList.erase(parallelList.begin() + j);
-                    j--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
-                    //successiva che potrebbe avere un valore non valido
+                for(unsigned long j=0; j<parallelList.size(); j++){
+                    if((parallelList[j].second.first == foundValue)||(parallelList[j].second.second == foundValue)){
+                        parallelList.erase(parallelList.begin() + j);
+                        j--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
+                        //successiva che potrebbe avere un valore non valido
+                    }
                 }
+                found = true;
+                //savingsIndex = 0;
+            }else{
+                parallelList.erase(parallelList.begin()+savingsIndex);
+                erased = true;
+                foundRoutes=false;
             }
-            found = true;
-            savingsIndex = 0;
         }else{
             parallelList.erase(parallelList.begin()+savingsIndex);
             erased = true;
