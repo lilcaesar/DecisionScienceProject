@@ -3,12 +3,14 @@
 #include<math.h>
 #include<bits/stdc++.h>
 
+//Funzione per definire l'ordine inverso utilizzato nella sort dei savings
 bool sortinrev(const std::pair<float,std::pair<int,int>> &a,
                const std::pair<float,std::pair<int,int>> &b)
 {
     return (a.first > b.first);
 }
 
+//Funzione per eliminare il primo valore del vettore
 template<typename T>
 void pop_front(std::vector<T>& vec)
 {
@@ -17,11 +19,16 @@ void pop_front(std::vector<T>& vec)
 }
 
 void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, std::vector<std::vector<float>> &distances){
+    //Dichiaro un vettore delle distanze della stessa dimensione del vettore delle coordinate
     unsigned long dimension = coordinates.size();
     distances.resize(dimension);
     for(unsigned long i=0; i<dimension;i++){
+        //Per ogni riga definisco la sua lunghezza come dimensione del vettore delle coordinate
+        //Ottengo così un vettore bidimensionale n*n
         distances[i].resize(dimension);
+        //Per ogni elemento j della riga i calcolo la distanza tra i e j nel vettore delle coordinate
         for(unsigned long j=0; j<dimension;j++){
+            //Utilizzo questo if per evitare eccezzioni e risparmiare operazioni
             if(i == j){
                 distances[i][j]=0;
             }else{
@@ -33,19 +40,27 @@ void computeDistanceTable(const std::vector<std::pair<int, int> > &coordinates, 
 }
 
 void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::vector<std::vector<float>> &savings, std::vector<std::pair<float,std::pair<int,int>>> &list){
+    //Dichiaro un vettore dei savings della stessa dimensione del vettore delle distanze
     unsigned long dimension = distances.size();
     savings.resize(dimension-1);
     for(unsigned long i=0; i<dimension-1;i++){
-        savings[i].resize(dimension);
+        //Per ogni riga definisco la sua lunghezza come dimensione del vettore delle distanze
+        //Ottengo così un vettore bidimensionale n*n
+        savings[i].resize(dimension);        
+        //Per ogni elemento j della riga i calcolo il saving tra i e j nel vettore delle distanze
         for(unsigned long j=0; j<dimension;j++){
+            //La prima riga è formata da 0 e la matrice è triangolare superiore
             if((i==0)||(j<=i)){
                 savings[i][j]=0;
             }else{
+                //Per i valori diversi da 0 calcoliamo per la riga i colonna j il risultato dell'operazione
+                // (d(0,i)*2 + d(0,j)*2) -(d(0,i) + d(0,j) + d(i,j))
                 savings[i][j]= (distances[0][i]*2 + distances[0][j]*2)-(distances[0][i]+distances[0][j]+distances[i][j]);
             }
         }
     }
 
+    //Lista temporanea di savings da ordinare
     std::vector<std::pair<float,std::pair<int,int>>> temporaryList;
 
     for(unsigned long i = 1; i<savings.size(); i++){
@@ -54,14 +69,19 @@ void computeSavingsTable(const std::vector<std::vector<float>> &distances, std::
         }
     }
 
+    //Ordinamento descrescente
     sort(temporaryList.begin(), temporaryList.end(), sortinrev);
 
+    //Assegnamento della lista aggiungendo le copie speculari per ottenere:
+    //Es. 1-5, 5-1, 4-2, 2-4 ecc...
     for(unsigned long i=0; i<temporaryList.size(); i++){
         list.push_back(temporaryList[i]);
         list.push_back(std::make_pair(temporaryList[i].first, std::make_pair(temporaryList[i].second.second, temporaryList[i].second.first)));
     }
 }
 
+//Creazione di un vettore iniziale 010, 020, 030,...,0(n-1)0
+//Da notare che dimension deve essere già assegnato come n-1
 void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long dimension){
     for(unsigned long i = 0; i < dimension; i++){
         std::vector<int> row;
@@ -148,23 +168,34 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
 }
 
 void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &parallelList, std::vector<std::vector<int> > &routes){
+    //Creo una lista di routes aggiungendo la capacità relativa ad ognuna di loro
     std::vector<std::pair<std::vector<int>, int>> routesWithCapacity;
 
+    //Assegno la capacità iniziale legata alla domanda della stazione centrale della route
     for(unsigned long i=0; i< routes.size(); i++){
         routesWithCapacity.push_back(std::make_pair(routes[i], demand[i+1]));
     }
 
+    //Indici delle due route che dovremo unire
     unsigned long route1=0;
     unsigned long route2=0;
+
+    //Per ogni elemento ij nella lista ordinata dei savings
     for(unsigned long savingIndex=0; savingIndex< parallelList.size(); savingIndex++){
         bool found = false;
+
+        //Per ogni route presente
         for(unsigned long i=0; i<routesWithCapacity.size(); i++){
+            //Cerco la route 0i
             if(parallelList[savingIndex].second.first == routesWithCapacity[i].first[routesWithCapacity[i].first.size()-2]){
                 route1=i;
+                //Cerco la route j0
                 for(unsigned long j=0; j<routesWithCapacity.size(); j++){
                     if(parallelList[savingIndex].second.second == routesWithCapacity[j].first[1]){
                         route2=j;
+                        //Se le ho trovate entrambe e non corrispondono alla stessa route
                         if(route1!=route2){
+                            //Esco dai for loops
                             found = true;
                             j=routesWithCapacity.size();
                             i=routesWithCapacity.size();
@@ -173,7 +204,10 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
                 }
             }
         }
+
+        //Se ho trovato le route e la somma delle capacità di esse è inferiore alla capacità massima
         if(((routesWithCapacity[route1].second + routesWithCapacity[route2].second) <=100)&&(found)){
+            //effettuo il merge delle due route
             routesWithCapacity[route1].first.pop_back();
             pop_front(routesWithCapacity[route2].first);
             routesWithCapacity[route1].first.insert(routesWithCapacity[route1].first.end(), routesWithCapacity[route2].first.begin(), routesWithCapacity[route2].first.end());
@@ -182,20 +216,24 @@ void parallelClarkeAndWright(const std::vector<int> &demand, std::vector<std::pa
         }
     }
 
+    //Aggiorno la versione senza capacità delle route
     routes.clear();
     for(unsigned long i = 0; i < routesWithCapacity.size(); i++){
         routes.push_back(routesWithCapacity[i].first);
     }
 }
 
+//Data una route restituisce il costo totale basandosi sulla matrice delle distanze
 float computeCost(const std::vector<std::vector<float>> &distances, const std::vector<int> &route){
     float cost=0;
     for(unsigned long j=0; j<route.size()-1; j++){
-        cost+= distances[j][j+1];
+        float c = distances[route[j]][route[j+1]];;
+        cost+= c;
     }
     return cost;
 }
 
+//Salvo i risultati delle operazioni nei due file
 void saveResults(const std::vector<std::vector<float> > &distances, const std::vector<std::vector<int> > &routes, std::ofstream &outputFile, double duration, std::ofstream &finalTableFile, int optimalValue, std::string inputFileName){
     float totalCost=0;
     for(unsigned long i=0; i<routes.size(); i++){
