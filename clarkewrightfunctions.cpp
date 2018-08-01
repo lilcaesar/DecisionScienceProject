@@ -93,20 +93,28 @@ void createInitialRoutes(std::vector<std::vector<int> > &routes, unsigned long d
 }
 
 void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::pair<float, std::pair<int, int> > > &sequentialList, std::vector<std::vector<int>> &routes){
+    //Indice della route su cui stiamo operando
     unsigned long routeIndex=0;
+    //Capienza rimanente per la route corrente
     int capacity;
+    //Finchè la lista dei savings non e vuota e l'indice della route non supera il numero di routes
     while ((!sequentialList.empty())&&(routeIndex<routes.size())) {
         bool found = false;
         bool isFirst = false;
+        //Inizializzo la capienza della route
         capacity=100 - demand[routes[routeIndex][1]];
+        //Indice del saving su cui stiamo operando
         unsigned long savingIndex=0;
+        //Finchè c'è ancora capienza disponibile
         while(capacity > 0){
+            //Se abbiamo trovato un saving compatibile aggiorno la route
             if(found){
-                //aggiungo route
+                //Salvo le informazioni riguardo al valore in comune e a quello da aggiungere alla route
                 int foundValue;
                 int addedValue;
-                float savingValue = sequentialList[savingIndex].first;
+                //Elimino lo 0 finale
                 routes[routeIndex].pop_back();
+                //A seconda di dove si trova il nuovo valore da aggiungere lo inserisco nella route
                 if(isFirst){
                     foundValue=sequentialList[savingIndex].second.first;
                     addedValue=sequentialList[savingIndex].second.second;
@@ -116,8 +124,11 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                     addedValue=sequentialList[savingIndex].second.first;
                     routes[routeIndex].push_back(addedValue);
                 }
+                //Riaggiungo lo 0 finale
                 routes[routeIndex].push_back(0);
 
+                //Elimino tutti i saving che contengono il terzultimo valore della route
+                //Es. se la route ha 01230 elimino tutti i saving con 2
                 for(unsigned long i=savingIndex; i<sequentialList.size(); i++){
                     if((sequentialList[i].second.first == foundValue)||(sequentialList[i].second.second == foundValue)){
                         sequentialList.erase(sequentialList.begin() + i);
@@ -126,6 +137,7 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                     }
                 }
 
+                //Cancello la route in cui era presente il valore appena aggiunto
                 for(unsigned long i = routeIndex+1; i<routes.size(); i++){
                     if(routes[i][1]==addedValue){
                         routes.erase(routes.begin()+i);
@@ -133,13 +145,18 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                     }
                 }
 
+                //Aggiorno la capienza rimanente e le variabili di stato
                 capacity -= demand[addedValue];
                 savingIndex=0;
                 found=false;
-            }else{
+
+            }else{//Ricerca del saving compatibile con la rute attuale
+                //Se l'indice del saving attuale supera il numero di saving
                 if(savingIndex>=sequentialList.size()){
+                    //Forziamo il cambiamento di route
                     capacity=-1;
 
+                    //Eliminiamo tutti i saving che contengono l'ultimo valore prima dello zero contenuto nella route attuale
                     for(unsigned long i=0; i<sequentialList.size(); i++){
                         if((sequentialList[i].second.first == routes[routeIndex][routes[routeIndex].size()-2])
                                 ||(sequentialList[i].second.second == routes[routeIndex][routes[routeIndex].size()-2])){
@@ -148,7 +165,9 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                         }
                     }
 
-                }else{
+                }else{//Se invece l'indice del saving risulta valido
+                    //Controllo se il l'ultimo valore (escluso lo 0) della route attuale coincide con
+                    //il primo o il secondo valore del saving attuale. Nel caso aggiorniamo le variabili di stato relative
                     if((sequentialList[savingIndex].second.first == routes[routeIndex][routes[routeIndex].size()-2])
                             && (capacity-demand[sequentialList[savingIndex].second.second] >= 0)){
                         found=true;
@@ -157,12 +176,13 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                              && (capacity-demand[sequentialList[savingIndex].second.first] >= 0)){
                         found=true;
                         isFirst=false;
-                    }else{
+                    }else{//Altrimenti aggiorniamo l'indice del saving
                         savingIndex++;
                     }
                 }
             }
         }
+        //Aggiorniamo l'indice della route
         routeIndex++;
     }
 }
