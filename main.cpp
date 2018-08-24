@@ -21,7 +21,7 @@ int main()
     */
     std::vector<std::vector<float>> savings;
 
-    //Path in cui è presente la cartella dei file di input
+    //Path in cui è presente la cartella dei file di input (funzionante su Linux, per altri OS sono necessarie modifiche)
     std::string path = "/root/Scrivania/DecisionScienceProjectData";
 
     //File della tabella complessiva
@@ -48,7 +48,7 @@ int main()
         computeSavingsTable(distances, savings, sequentialList);
         std::vector<std::pair<float,std::pair<int,int>>> parallelList(sequentialList);
 
-        //Dichiaro il file di output relativo al file attuale
+        //Dichiaro il file di output relativo al file attuale (e' necessario creare una cartella output nella cartella dell'eseguibile)
         boost::filesystem::path temporaryFilePath(p.path().string());
         std::string outputFileName = "output/solution-" + temporaryFilePath.stem().string() + ".txt";
         std::ofstream outputFile(outputFileName);
