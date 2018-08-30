@@ -129,7 +129,7 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
 
                 //Elimino tutti i saving che contengono il terzultimo valore della route
                 //Es. se la route ha 01230 elimino tutti i saving con 2
-                for(unsigned long i=savingIndex; i<sequentialList.size(); i++){
+                for(unsigned long i=0; i<sequentialList.size(); i++){
                     if((sequentialList[i].second.first == foundValue)||(sequentialList[i].second.second == foundValue)){
                         sequentialList.erase(sequentialList.begin() + i);
                         i--; //perchè se eliminiamo una riga e poi incrementiamo saltiamo quella
@@ -180,6 +180,14 @@ void sequentialClarkeAndWright(const std::vector<int> &demand, std::vector<std::
                         savingIndex++;
                     }
                 }
+            }
+        }
+        //Eliminiamo tutti i saving che contengono l'ultimo valore prima dello zero contenuto nella route attuale
+        for(unsigned long i=0; i<sequentialList.size(); i++){
+            if((sequentialList[i].second.first == routes[routeIndex][routes[routeIndex].size()-2])
+                    ||(sequentialList[i].second.second == routes[routeIndex][routes[routeIndex].size()-2])){
+                sequentialList.erase(sequentialList.begin() + i);
+                i--;
             }
         }
         //Aggiorniamo l'indice della route
