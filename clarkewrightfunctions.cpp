@@ -267,15 +267,15 @@ void saveResults(const std::vector<std::vector<float> > &distances, const std::v
     for(unsigned long i=0; i<routes.size(); i++){
         float cost= computeCost(distances,routes[i]);
         totalCost += cost;
-        std::string line = "Route #" + std::to_string(i+1) + " Cost: " + std::to_string(static_cast<int>(cost)) + ",   ";
+        std::string line = "Route #" + std::to_string(i+1) + " Cost: " + std::to_string(cost) + ",   ";
         for(unsigned long j=0; j<routes[i].size(); j++){
             line += " " + std::to_string(routes[i][j]);
         }
         line+="\n";
         outputFile << line;
     }
-    outputFile << "\n" << "Total cost: " + std::to_string(static_cast<int>(totalCost));
+    outputFile << "\n" << "Total cost: " + std::to_string(totalCost);
     outputFile << "\n" << "Duration: " + std::to_string(duration) + "s";
 
-    finalTableFile << inputFileName + "   "<< distances.size()-1 << "         " + std::to_string(static_cast<int>(totalCost)) +  "    " << duration << "s" << "     " + std::to_string((totalCost - optimalValue)/optimalValue*100) + "\n";
+    finalTableFile << inputFileName + "   "<< distances.size()-1 << "         " + std::to_string(totalCost) +  "    " << duration << "s" << "     " + std::to_string((totalCost - optimalValue)/optimalValue*100) + "\n";
 }
